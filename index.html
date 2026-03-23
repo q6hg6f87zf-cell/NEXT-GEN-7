@@ -1620,7 +1620,16 @@ return`<div class="card"> <div class="section-title">New Character Forge</div>
   <button class="btn btn-sm ${c.payment==='paypal'?'btn-green':''}" style="${c.payment==='paypal'?'':'background:rgba(10,8,30,0.8)'}" onclick="STATE.creation.payment='paypal';render()">💳 PayPal (80%)</button>
 </div>
 <div style="margin-bottom:8px"><label class="label">TikTok Username</label><input class="input" value="${esc(c.username)}" oninput="STATE.creation.username=this.value" placeholder="@username"></div> 
-<div style="margin-bottom:8px"><label class="label">Character Name</label> <select class="select" onchange="STATE.creation.charname=this.value"> <option value="">— Select Name —</option> ${NAMES.filter(n=>!STATE.players.find(p=>p.charname===n&&!p.isDead)).map(n=>`<option${c.charname===n?' selected':''}>${n}</option>`).join('')} </select></div> 
+<div style="margin-bottom:8px">
+  <label class="label">Character Name</label> 
+  <select class="select" onchange="if(this.value==='custom'){ STATE.creation.charname=''; STATE.creation.isCustomName=true; } else { STATE.creation.charname=this.value; STATE.creation.isCustomName=false; } render()"> 
+    <option value="">— Select Name —</option> 
+    ${NAMES.filter(n=>!STATE.players.find(p=>p.charname===n&&!p.isDead)).map(n=>`<option value="${n}" ${c.charname===n && !c.isCustomName ?'selected':''}>${n}</option>`).join('')} 
+    <option value="custom" ${c.isCustomName ? 'selected' : ''}>✏️ Custom Name...</option>
+  </select>
+  ${c.isCustomName ? `<input class="input" style="margin-top:6px; border-color:var(--gold)" placeholder="Type custom name..." value="${esc(c.charname)}" oninput="STATE.creation.charname=this.value">` : ''}
+</div> 
+
 <div style="margin-bottom:8px"><label class="label">Race / Heritage</label> <select class="select" onchange="STATE.creation.race=this.value;render()"> <option value="">— Select Race —</option> ${Object.keys(RACES).map(r=>`<option value="${r}"${c.race===r?' selected':''}>${RACES[r].icon} ${r}</option>`).join('')} </select></div> 
 <div style="margin-bottom:8px"><label class="label">Class</label> <select class="select" onchange="STATE.creation={...STATE.creation,cls:this.value,repRoll:null,traitRoll:null,weaponRoll:null,skillRoll:null,shadowRoll:null,enchantRoll:null,destinyRoll:null};render()"> <option value="">— Select Class —</option> ${CLASSES.map(cl=>`<option value="${cl}"${c.cls===cl?' selected':''}>${CLASS_ICON[cl]} ${cl} — HP ${CLASS_HP[cl]}</option>`).join('')} </select></div> 
 ${base?`<div class="roll-box" style="margin-bottom:8px">
